@@ -21,7 +21,7 @@ public class HabitacionRequestDTO {
 
     private String descripcion;
 
-    // Getters y Setters
+   
     public String getNumeroHabitacion() { return numeroHabitacion; }
     public void setNumeroHabitacion(String numeroHabitacion) { this.numeroHabitacion = numeroHabitacion; }
 
