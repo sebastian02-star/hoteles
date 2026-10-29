@@ -28,7 +28,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
         
-        // Eximimos habitaciones, autenticación y usuarios para que el filtro no los bloquee
+        
         return path.startsWith("/api/habitaciones") || 
                path.startsWith("/api/auth/") || 
                path.startsWith("/api/usuarios");
