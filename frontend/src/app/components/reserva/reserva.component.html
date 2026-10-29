@@ -1,0 +1,140 @@
+<div class="container-fluid py-4">
+    <div *ngIf="mensajeExito" class="alert alert-success alert-dismissible fade show shadow-lg rounded-4 mb-4 border-0 bg-success text-white d-flex align-items-center" role="alert">
+    <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+    <div>
+      <strong>¡Operación Exitosa!</strong> {{ mensajeExito }}
+    </div>
+  </div>
+  
+  <div class="card shadow border-0 rounded-4 p-4 mb-4">
+    <h3 class="fw-bold text-primary mb-4"><i class="bi bi-calendar-check-fill me-2"></i>Nueva Gestión de Reserva</h3>
+
+    <form (ngSubmit)="guardarReserva()" #reservaForm="ngForm">
+
+      <h5 class="text-secondary mb-3">1. Datos del Huésped</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" required placeholder="Ej. Juan Carlos">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Apellido</label>
+          <input type="text" class="form-control" [(ngModel)]="cliente.apellido" name="apellido" required placeholder="Ej. Pérez Gómez">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Nacionalidad</label>
+          <input type="text" class="form-control" [(ngModel)]="cliente.nacionalidad" name="nacionalidad" required placeholder="Ej. Peruano">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Tipo Doc.</label>
+          <select class="form-select" [(ngModel)]="cliente.tipoDocumento" name="tipoDocumento" (change)="limpiarDocumento()">
+            <option value="DNI">DNI</option>
+            <option value="CE">Carnet Extranjería</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Nro. Documento</label>
+          <input type="text" class="form-control" [(ngModel)]="cliente.numeroDocumento" name="numeroDocumento"
+                 [attr.maxlength]="cliente.tipoDocumento === 'DNI' ? 8 : 12"
+                 (keypress)="validarEntradaDocumento($event)"
+                 required placeholder="Nro de documento">
+        </div>
+      </div>
+
+
+      <h5 class="text-secondary mb-3">2. Seleccionar Habitación y Huéspedes</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Filtrar Habitaciones (Ej: matri, simple...)</label>
+          <input type="text" class="form-control" [(ngModel)]="filtroHabitacion" name="filtroHabitacion" placeholder="Escribe para buscar...">
+        </div>
+        <div class="col-md-5">
+        <label class="form-label fw-semibold">Habitación Disponible</label>
+            <select class="form-select" [(ngModel)]="reserva.habitacionId" name="habitacionId" (change)="onHabitacionChange()" required>
+                <option [ngValue]="null" disabled>Seleccione una habitación...</option>
+                <option *ngFor="let hab of habitacionesFiltradas" [value]="hab.id">
+                Habitación {{ hab.numero }} - {{ hab.tipo }} (S/ {{ hab.precio }})
+                </option>
+        </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Cantidad de Personas</label>
+            <input type="number" class="form-control" [(ngModel)]="reserva.cantidadPersonas" name="cantidadPersonas" min="1" max="10" required>
+        </div>
+      </div>
+
+
+      <h5 class="text-secondary mb-3">3. Fechas de Estancia y Costo</h5>
+      <div class="row g-3 mb-4 align-items-center">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Fecha de Ingreso</label>
+          <input type="date" class="form-control" [(ngModel)]="reserva.fechaIngreso" name="fechaIngreso" [min]="fechaMinima" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Fecha de Salida</label>
+          <input type="date" class="form-control" [(ngModel)]="reserva.fechaSalida" name="fechaSalida" [min]="reserva.fechaIngreso || fechaMinima" required>
+        </div>
+        <div class="col-md-4 text-center bg-light p-3 rounded-3 border">
+            <span class="text-muted d-block small fw-bold">SUBTOTAL ESTIMADO:</span>
+            <h3 class="text-success fw-bold mb-0">S/ {{ calcularSubtotal | number:'1.2-2' }}</h3>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill shadow-sm">
+          <i class="bi bi-save me-2"></i>Registrar Reserva
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card shadow border-0 rounded-4 p-4">
+    <h3 class="fw-bold text-primary mb-4"><i class="bi bi-list-columns-reverse me-2"></i>Historial de Reservas Registradas</h3>
+    
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th># ID</th>
+            <th>Huésped</th>
+            <th>Documento</th>
+            <th>Habitación</th>
+            <th>Personas</th>
+            <th>Ingreso / Salida</th>
+            <th>Subtotal</th>
+            <th>Estado Automático</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of reservasLista">
+            <td class="fw-bold">#{{ r.id }}</td>
+            <td>{{ r.cliente?.nombre }} {{ r.cliente?.apellido }}</td>
+            <td><span class="badge bg-light text-dark border">{{ r.cliente?.tipoDocumento }}: {{ r.cliente?.numeroDocumento }}</span></td>
+            <td>Hab. {{ r.habitacion?.numero }} ({{ r.habitacion?.tipo }})</td>
+            <td><span class="badge bg-secondary">{{ r.cantidadPersonas || 1 }} pers.</span></td>
+            <td>
+              <small class="d-block text-muted">In: {{ r.fechaIngreso }}</small>
+              <small class="d-block text-muted">Out: {{ r.fechaSalida }}</small>
+            </td>
+            <td class="fw-bold text-dark">S/ {{ r.costoTotal | number:'1.2-2' }}</td>
+            <td>
+              
+              <span class="badge px-3 py-2 rounded-pill fw-semibold "
+                    [ngClass]="{
+                      'bg-danger text-white': r.estado === 'Ocupada',
+                      'bg-warning text-dark': r.estado === 'Reservada' || r.estado === 'Limpieza',
+                      'bg-success text-white': r.estado === 'Disponible'
+                    }">
+                {{ r.estado }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="reservasLista.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">No hay reservas registradas todavía.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

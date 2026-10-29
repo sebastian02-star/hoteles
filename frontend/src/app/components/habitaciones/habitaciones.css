@@ -1,0 +1,41 @@
+
+.btn-gold {
+  background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #e6c547, #c28b22);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+
+.table thead th {
+  background-color: #1a1a1a;
+  color: #d4af37;
+  font-size: 0.75rem;
+  letter-spacing: 0.8px;
+  border-bottom: 2px solid #d4af37;
+}
+
+
+.card {
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+
+.modal-content {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+
+.form-control:focus, .form-select:focus {
+  border-color: #d4af37;
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+}

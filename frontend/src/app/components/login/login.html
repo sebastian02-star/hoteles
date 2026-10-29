@@ -1,0 +1,52 @@
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 12px;">
+    
+    <div class="text-center mb-4">
+      <h2 class="fw-bold text-primary">SICIG Hotel</h2>
+      <p class="text-muted">Sistema de Gestión y Control Hotelero</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+      
+      <div class="mb-3">
+        <label for="username" class="form-label fw-semibold">Usuario</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          class="form-control" 
+          [(ngModel)]="credentials.username" 
+          required 
+          placeholder="Ingrese su usuario">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-control" 
+          [(ngModel)]="credentials.password" 
+          required 
+          placeholder="****">
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary w-100 py-2 fw-bold shadow-sm" 
+        [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        {{ isLoading ? 'Validando...' : 'Iniciar Sesión' }}
+      </button>
+
+    </form>
+    
+
+  </div>
+</div>

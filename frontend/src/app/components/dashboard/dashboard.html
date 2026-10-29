@@ -1,0 +1,60 @@
+<div class="dashboard-container">
+
+  <aside class="sidebar" [class.mobile-show]="menuMovilAbierto">
+    <div class="sidebar-brand d-flex justify-content-between align-items-center">
+      <div>
+        <h2>SICIG Hotel</h2>
+        <p>Panel de Control</p>
+      </div>
+      <button class="btn text-white d-md-none" (click)="toggleMenuMovil()">
+        <i class="bi bi-x-lg fs-5"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+
+      <a routerLink="inicio" routerLinkActive="active" (click)="toggleMenuMovil()">
+        <i class="bi bi-speedometer2"></i> Inicio
+      </a>
+      
+
+      <a routerLink="usuarios" routerLinkActive="active" (click)="toggleMenuMovil()">
+        <i class="bi bi-people-fill"></i> Usuarios
+      </a>
+      <a routerLink="/habitaciones" class="nav-link text-white fw-semibold">
+        <i class="bi bi-door-closed me-2 text-warning"></i> Habitaciones
+      </a>
+      <a routerLink="reservas" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-calendar-check me-2"></i>
+        <span>Gestión de Reservas</span>
+      </a>
+      <a routerLink="/caja" class="nav-link text-white fw-semibold">
+        <i class="bi bi-cash-stack me-2 text-warning"></i> Caja y Turnos
+      </a>
+    </nav>
+  </aside>
+
+
+  <div class="sidebar-overlay" *ngIf="menuMovilAbierto" (click)="toggleMenuMovil()"></div>
+
+
+  <main class="main-content">
+    <header class="top-navbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-light d-md-none border-0" (click)="toggleMenuMovil()">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <span class="navbar-title text-truncate">Sistema de Gestión Hotelera</span>
+      </div>
+      
+      <div class="user-info">
+        <span class="welcome-text d-none d-sm-inline">Bienvenido, <strong>SuperAdmin</strong></span>
+        <span class="role-badge">SUPERADMIN</span>
+      </div>
+    </header>
+
+
+    <div class="content-body">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

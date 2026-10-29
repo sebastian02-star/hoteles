@@ -1,0 +1,121 @@
+<div class="container-fluid px-0">
+  
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage=''"></button>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage=''"></button>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="section-title">Gestión de Usuarios</h2>
+      <p class="section-subtitle">Registro y administración de cuentas del personal del hotel (SuperAdmin)</p>
+    </div>
+    <button class="btn btn-custom-primary text-nowrap shadow-sm" (click)="toggleFormulario()">
+      <i class="bi bi-person-plus-fill me-1"></i> {{ mostrarFormulario ? 'Cerrar Formulario' : 'Nuevo Usuario' }}
+    </button>
+  </div>
+
+
+  <div *ngIf="mostrarFormulario" class="card-form shadow-sm p-3 p-md-4 mb-4 bg-white rounded-4">
+    <h4 class="form-section-title mb-3">Registrar Nuevo Usuario</h4>
+    <form #usuarioForm="ngForm" (ngSubmit)="registrar(usuarioForm)">
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Nombre de usuario</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoUsuario.username" name="username" required #username="ngModel" placeholder="Ej. jperez">
+          <div *ngIf="username.invalid && (username.dirty || username.touched)" class="text-danger small mt-1">El usuario es obligatorio.</div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-control" [(ngModel)]="nuevoUsuario.password" name="password" required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$" #password="ngModel" placeholder="Mín. 6 carac., letras, números y símbolo">
+          <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger small mt-1">Debe incluir letras, números y símbolos.</div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Nombres</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoUsuario.nombres" name="nombres" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" #nombres="ngModel" placeholder="Solo letras">
+          <div *ngIf="nombres.invalid && (nombres.dirty || nombres.touched)" class="text-danger small mt-1">No se permiten números en nombres.</div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Apellidos</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" #apellidos="ngModel" placeholder="Solo letras">
+          <div *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)" class="text-danger small mt-1">No se permiten números en apellidos.</div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" [(ngModel)]="nuevoUsuario.email" name="email" required email #email="ngModel" placeholder="usuario@hotel.com">
+          <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger small mt-1">Ingrese un correo válido con @.</div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <label class="form-label">Rol del Sistema</label>
+          <select class="form-select" [(ngModel)]="nuevoUsuario.roles" name="roles" required>
+            <option value="" disabled selected>Seleccione un rol</option>
+            <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+            <option value="RECEPCION">RECEPCION</option>
+            <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+            <option value="RESTAURANTE">RESTAURANTE</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-3">
+        <button type="button" class="btn btn-light border w-100 w-sm-auto" (click)="mostrarFormulario=false">Cancelar</button>
+        <button type="submit" class="btn btn-dark w-100 w-sm-auto" [disabled]="usuarioForm.invalid">Guardar Usuario</button>
+      </div>
+    </form>
+  </div>
+
+
+  <div class="card-table shadow-sm p-3 p-md-4 bg-white rounded-4">
+    <h4 class="table-title mb-3">Usuarios Registrados en el Sistema</h4>
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>IDENTIFICACIÓN</th>
+            <th>Nombre de usuario</th>
+            <th>Nombre Completo</th>
+            <th>Correo electrónico</th>
+            <th>Roles</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios">
+            <td>#{{ u.id }}</td>
+            <td class="fw-bold">{{ u.username }}</td>
+            <td>{{ u.nombres }} {{ u.apellidos }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">{{ u.roles }}</span></td>
+            <td>
+              <span [ngClass]="u.activo ? 'badge bg-success bg-opacity-10 text-success' : 'badge bg-secondary bg-opacity-10 text-secondary'">
+                {{ u.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="abrirModalEditar(u)" title="Editar">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarLogico(u.id)" title="Eliminar lógicamente">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+          </tr>
+          <tr *ngIf="usuarios.length === 0">
+            <td colspan="7" class="text-center py-4 text-muted">No hay usuarios registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

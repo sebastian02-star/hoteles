@@ -1,0 +1,119 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1"><i class="fas fa-door-open me-2 text-warning"></i>Gestión de Habitaciones</h2>
+      <p class="text-muted mb-0">Administra el estado, tipo y disponibilidad de las habitaciones del hotel.</p>
+    </div>
+    <button class="btn btn-gold shadow-sm px-4 py-2 rounded-pill fw-semibold" (click)="abrirModal()">
+      <i class="fas fa-plus-circle me-2"></i> Nueva Habitación
+    </button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i> {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i> {{ errorMessage }}
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-uppercase fs-7 text-secondary">
+            <tr>
+              <th class="ps-4">N° Habitación</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Precio (S/.)</th>
+              <th>Descripción</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of habitaciones">
+              <td class="ps-4 fw-bold text-dark">{{ h.numero }}</td>
+              <td>{{ h.tipo }}</td>
+              <td>
+                <span class="badge rounded-pill px-3 py-2" 
+                      [ngClass]="{
+                        'bg-success-subtle text-success': h.estado === 'Disponible',
+                        'bg-danger-subtle text-danger': h.estado === 'Ocupada',
+                        'bg-warning-subtle text-warning': h.estado === 'Limpieza',
+                        'bg-info-subtle text-info': h.estado === 'Mantenimiento',
+                        'bg-primary-subtle text-primary': h.estado === 'Reservada',
+                        'bg-secondary-subtle text-secondary': h.estado === 'Fuera de Servicio'
+                      }">
+                  {{ h.estado }}
+                </span>
+              </td>
+              <td class="fw-semibold text-success">S/. {{ h.precio | number:'1.2-2' }}</td>
+              <td class="text-muted text-truncate" style="max-width: 250px;">{{ h.descripcion || 'Sin descripción' }}</td>
+              <td class="text-end pe-4">
+                <button class="btn btn-sm btn-outline-danger rounded-circle p-2" title="Eliminar" (click)="eliminar(h.id)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="habitaciones.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="fas fa-box-open fa-2x mb-2 d-block"></i> No hay habitaciones registradas en el sistema.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade show d-block" tabindex="-1" *ngIf="mostrarModal" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-dark text-white px-4 py-3 rounded-top-4">
+          <h5 class="modal-title fw-bold"><i class="fas fa-door-closed me-2 text-warning"></i> Registrar Nueva Habitación</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+        </div>
+        <form #habitacionForm="ngForm" (ngSubmit)="guardarHabitacion(habitacionForm)">
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Número de Habitación <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="numero" [(ngModel)]="nuevaHabitacion.numero" required placeholder="Ej. 101, 202-A">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Tipo de Habitación <span class="text-danger">*</span></label>
+                <select class="form-select" name="tipo" [(ngModel)]="nuevaHabitacion.tipo" required>
+                  <option value="" disabled selected>Seleccione el tipo</option>
+                  <option value="Simple">Simple</option>
+                  <option value="Matrimonial">Matrimonial</option>
+                  <option value="Doble">Doble</option>
+                  <option value="Suite">Suite</option>
+                  <option value="VIP">VIP</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Estado Inicial <span class="text-danger">*</span></label>
+                <select class="form-select" name="estado" [(ngModel)]="nuevaHabitacion.estado" required>
+                  <option *ngFor="let est of estadosHabitacion" [value]="est">{{ est }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Precio por Noche (S/.) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" class="form-control" name="precio" [(ngModel)]="nuevaHabitacion.precio" required min="0">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Descripción o Comodidades</label>
+                <textarea class="form-control" name="descripcion" [(ngModel)]="nuevaHabitacion.descripcion" rows="3" placeholder="Ej. Vista al mar, baño privado..."></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light px-4 py-3 rounded-bottom-4">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-gold rounded-pill px-4 fw-semibold" [disabled]="!habitacionForm.valid">Guardar Habitación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

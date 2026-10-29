@@ -1,0 +1,21 @@
+
+.table th {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background-color: #f8fafc !important;
+}
+.btn-custom-primary {
+  background-color: #c5a880;
+  color: #1a1a1a;
+  border: none;
+  box-shadow: 0 2px 4px rgba(197, 168, 128, 0.3);
+}
+
+.modal {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
